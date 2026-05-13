@@ -1,11 +1,8 @@
-# README.md
-
-````md
 # 🖨️ Burocracia Simulator
 
-> “São 08h47.
-> A impressora já está irritada.
-> O café acabou.
+> “São 08h47.  
+> A impressora já está irritada.  
+> O café acabou.  
 > E existem 47 documentos esperando por você.”
 
 Um jogo de horror burocrático / simulador de escritório inspirado por:
@@ -14,7 +11,7 @@ Um jogo de horror burocrático / simulador de escritório inspirado por:
 - caos administrativo brasileiro
 - impressoras possuídas
 
-Desenvolvido com:
+**Desenvolvido com:**
 - React
 - Vite
 - JavaScript (JSX)
@@ -36,13 +33,13 @@ Sua função é:
 - salvar tudo na pasta correta;
 - sobreviver até o fim do expediente.
 
-Mas cuidado com:
+**Mas cuidado com:**
 - CPFs inválidos;
 - nomes divergentes;
 - cidades incompatíveis;
 - documentos vencidos;
 - páginas faltando;
-- e principalmente:
+- e principalmente:  
 - a impressora.
 
 ---
@@ -63,7 +60,7 @@ Verifique:
 A impressora pode:
 - superaquecer;
 - ficar sem toner;
-- atol ar;
+- atolar;
 - entrar em “modo fantasma”;
 - desenvolver sentimentos.
 
@@ -108,188 +105,3 @@ Conforme as fases avançam:
 
 ```bash
 git clone https://github.com/SEU-USUARIO/burocracia-simulator.git
-````
-
----
-
-## 2. Entre na pasta
-
-```bash
-cd burocracia-simulator
-```
-
----
-
-## 3. Instale o Node.js
-
-Recomendado:
-
-* Node 22+
-
-Usando NVM:
-
-```bash
-nvm install
-nvm use
-```
-
----
-
-## 4. Instale as dependências
-
-```bash
-npm install
-```
-
----
-
-## 5. Rode o projeto
-
-```bash
-npm run dev
-```
-
-O Vite irá abrir algo como:
-
-```txt
-http://localhost:5173
-```
-
----
-
-# 📁 Estrutura do projeto
-
-```txt
-burocracia-simulator/
-├── package.json
-├── vite.config.js
-├── index.html
-├── src/
-│   ├── main.jsx
-│   └── App.jsx
-```
-
----
-
-# 🎯 Gameplay
-
-## Aprovar documentos válidos
-
-Ganha pontos.
-
----
-
-## Rejeitar documentos inválidos
-
-Ganha pontos.
-
----
-
-## Aprovar documentos errados
-
-Perde pontos.
-
----
-
-## Salvar em pasta incorreta
-
-Perde pontos.
-
----
-
-## Ignorar a impressora
-
-Consequências imprevisíveis.
-
----
-
-# 🖥️ Roadmap
-
-## Áudio
-
-* sons da impressora;
-* scanner;
-* glitches;
-* ambiência corporativa.
-
----
-
-## Eventos psicológicos
-
-* documentos alterando sozinhos;
-* nomes repetidos;
-* arquivos impossíveis;
-* mensagens ocultas;
-* falhas visuais.
-
----
-
-## Sistema narrativo
-
-* chefes;
-* e-mails;
-* funcionários;
-* lore corporativa.
-
----
-
-## Modo infinito
-
----
-
-## Sistema de sanidade
-
----
-
-## Leaderboard
-
----
-
-# 🧠 Inspirações
-
-* Papers, Please
-* The Stanley Parable
-* Not For Broadcast
-* ironia corporativa brasileira
-* repartições públicas
-* impressoras reais
-
----
-
-# 🚀 Build para produção
-
-```bash
-npm run build
-```
-
-Os arquivos finais ficarão em:
-
-```txt
-dist/
-```
-
----
-
-# 📜 Licença
-
-MIT
-
----
-
-# 👨‍💻 Autor
-
-Jonathan De Oliveira Marcon
-
-Computer Science Student
-Indie developer em desenvolvimento constante.
-
----
-
-# ☕ Observação importante
-
-Nenhuma impressora foi ferida durante o desenvolvimento deste jogo.
-
-Provavelmente.
-
-```
-```
