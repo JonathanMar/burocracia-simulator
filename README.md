@@ -127,8 +127,17 @@ cd burocracia-simulator
 ### Recomendado
 
 - Node.js 22+
+- npm (ou yarn)
+- Git
 
-### Usando NVM
+### Verifique se já possui:
+
+```bash
+node -v
+npm -v
+```
+
+### Usando NVM (opcional)
 
 ```bash
 nvm install
@@ -151,7 +160,7 @@ npm install
 npm run dev
 ```
 
-O Vite irá abrir algo como:
+Abra no navegador:
 
 ```txt
 http://localhost:5173
