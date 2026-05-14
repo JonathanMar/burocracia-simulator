@@ -109,7 +109,7 @@ Conforme as fases avançam:
 ## 1️⃣ Clone o projeto
 
 ```bash
-git clone https://github.com/SEU-USUARIO/burocracia-simulator.git
+git clone https://github.com/JonathanMar/burocracia-simulator.git
 ```
 
 ---
