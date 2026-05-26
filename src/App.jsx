@@ -43,8 +43,6 @@ export default function App() {
   if (phase === 'tutorial') {
     return (
       <TutorialScreen
-        tutorialStep={tutorialStep}
-        setTutorialStep={setTutorialStep}
         onFinish={() => setPhase('playing')}
       />
     );

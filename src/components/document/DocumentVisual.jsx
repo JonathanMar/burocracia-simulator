@@ -15,10 +15,20 @@ export default function DocumentVisual({ doc, page=1, selectedField, onFieldClic
     <ClickableField fieldId={`doc:${name}`} label={label} value={value} side="documento" selectedField={selectedField} onFieldClick={onFieldClick} suspicious={fp(name)}/>
   );
 
+  // Post-it context note rendered at the bottom of every doc that has one
+  const contextNote = doc.context ? (
+    <div style={{marginTop:8,background:"#fffde0",border:"1px solid #ccaa00",borderRadius:3,padding:"5px 8px",fontSize:9,color:"#775500",lineHeight:1.5}}>
+      {doc.context}
+    </div>
+  ) : null;
+
   if (doc.type === "RG") return (
     <DocSheet title="CARTEIRA DE IDENTIDADE" subtitle={`República Federativa do Brasil • ${doc.data.organ}`} headerColor="#7a1515" seal="🏛️">
       <div style={{display:"flex",gap:8,marginBottom:4}}>
-        <PhotoPlaceholder mismatch={doc.photoMismatch}/>
+        <div style={{flexShrink:0}}>
+          <div style={{fontSize:7,color:"#999",marginBottom:2,textAlign:"center"}}>FOTO DOC</div>
+          <PhotoPlaceholder features={doc.data.docPhotoFeatures} mismatch={doc.photoMismatch}/>
+        </div>
         <div style={{flex:1}}>
           {field("Nome", doc.data.name, "name")}
           {field("CPF", doc.hasRasura ? "███.███.███-██  ⚠rasura" : doc.data.cpf, "cpf")}
@@ -28,9 +38,10 @@ export default function DocumentVisual({ doc, page=1, selectedField, onFieldClic
       </div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6}}>
         {field("Emissão", doc.data.issueDate, "issueDate")}
-        {field("Validade", doc.data.expiryDate, "expiryDate")}
+        <div title="Verifique se a validade não expirou">{field("⏳ Validade", doc.data.expiryDate, "expiryDate")}</div>
       </div>
       <SignatureField path={doc.data.signature} label="Assinatura do Titular" missing={doc.missingSignature}/>
+      {contextNote}
       {expiredStamp}
     </DocSheet>
   );
@@ -38,7 +49,10 @@ export default function DocumentVisual({ doc, page=1, selectedField, onFieldClic
   if (doc.type === "CNH") return (
     <DocSheet title="CARTEIRA NACIONAL DE HABILITAÇÃO" subtitle={`DETRAN • ${doc.data.organ}`} headerColor="#1a5a7a" bg="#eef5fa" borderCol="#90b8d0" seal="🚗">
       <div style={{display:"flex",gap:8,marginBottom:4}}>
-        <PhotoPlaceholder mismatch={doc.photoMismatch}/>
+        <div style={{flexShrink:0}}>
+          <div style={{fontSize:7,color:"#999",marginBottom:2,textAlign:"center"}}>FOTO DOC</div>
+          <PhotoPlaceholder features={doc.data.docPhotoFeatures} mismatch={doc.photoMismatch}/>
+        </div>
         <div style={{flex:1}}>
           {field("Nome", doc.data.name, "name")}
           {field("CPF", doc.hasRasura ? "███.███.███-██  ⚠rasura" : doc.data.cpf, "cpf")}
@@ -49,9 +63,10 @@ export default function DocumentVisual({ doc, page=1, selectedField, onFieldClic
       {field("Naturalidade", doc.data.city, "city")}
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6}}>
         {field("Emissão", doc.data.issueDate, "issueDate")}
-        {field("Validade", doc.data.expiryDate, "expiryDate")}
+        <div title="Verifique se a validade não expirou">{field("⏳ Validade", doc.data.expiryDate, "expiryDate")}</div>
       </div>
       <SignatureField path={doc.data.signature} label="Assinatura do Condutor" missing={doc.missingSignature}/>
+      {contextNote}
       {expiredStamp}
     </DocSheet>
   );
@@ -74,6 +89,7 @@ export default function DocumentVisual({ doc, page=1, selectedField, onFieldClic
             {doc.missingStamp && <div style={{background:"#fff8e0",border:"1px solid #d4a000",borderRadius:2,padding:"4px 8px",fontSize:9,color:"#a06000",marginTop:6}}>⚠ Área de carimbo: vazia</div>}
             <div style={{marginTop:8,color:"#666",fontSize:9,lineHeight:1.6,borderTop:"1px dashed #c0aa88",paddingTop:6}}>Pelo presente instrumento, as partes acordam os termos e condições aqui estabelecidos...</div>
             <div style={{marginTop:6,background:"#eef2ff",border:"1px dashed #8899cc",borderRadius:2,padding:"4px 8px",fontSize:9,color:"#4466aa"}}>✍ Assinatura do titular na <strong>Página 2</strong></div>
+            {contextNote}
           </>
         ) : (
           <>
@@ -106,6 +122,7 @@ export default function DocumentVisual({ doc, page=1, selectedField, onFieldClic
             {field("Ano-Calendário", doc.data.issueDate.split("/")[2], "issueDate")}
             {doc.missingStamp && <div style={{background:"#fff8e0",border:"1px solid #d4a000",borderRadius:2,padding:"4px 8px",fontSize:9,color:"#a06000",marginTop:6}}>⚠ Carimbo da Receita Federal: ausente</div>}
             <div style={{marginTop:8,color:"#666",fontSize:9,lineHeight:1.6,borderTop:"1px dashed #90b870",paddingTop:6}}>Declaro que as informações prestadas neste formulário são verdadeiras...</div>
+            {contextNote}
           </>
         ) : (
           <>
@@ -124,9 +141,10 @@ export default function DocumentVisual({ doc, page=1, selectedField, onFieldClic
       {field("CPF", doc.data.cpf, "cpf")}
       {field("Cidade", doc.data.formCity, "formCity")}
       {field("CID", doc.data.cid, "cid")}
-      {field("Validade", doc.data.expiryDate, "expiryDate")}
+      <div title="Verifique se a validade não expirou">{field("⏳ Validade", doc.data.expiryDate, "expiryDate")}</div>
       <div style={{marginTop:6,fontSize:9,color:"#666"}}>Responsável: {doc.data.doctor} — {doc.data.crm}</div>
       <SignatureField path={doc.data.signature} label="Assinatura do Médico" missing={doc.missingSignature}/>
+      {contextNote}
     </DocSheet>
   );
 
@@ -136,10 +154,11 @@ export default function DocumentVisual({ doc, page=1, selectedField, onFieldClic
       {field("CPF", doc.data.cpf, "cpf")}
       {field("Cidade", doc.data.formCity, "formCity")}
       {field("CID", doc.data.cid, "cid")}
-      {field("Validade", doc.data.expiryDate, "expiryDate")}
+      <div title="Verifique se a validade não expirou">{field("⏳ Validade", doc.data.expiryDate, "expiryDate")}</div>
       <div style={{marginTop:8,background:"#ede0ed",borderRadius:2,padding:8,fontSize:9,color:"#444",lineHeight:1.6}}>Atesto que o(a) paciente acima necessita de afastamento por período determinado.</div>
       <div style={{marginTop:6,fontSize:9,color:"#666"}}>Dr(a): {doc.data.doctor} — {doc.data.crm}</div>
       <SignatureField path={doc.data.signature} label="Assinatura e Carimbo" missing={doc.missingSignature}/>
+      {contextNote}
       {expiredStamp}
     </DocSheet>
   );
@@ -150,8 +169,9 @@ export default function DocumentVisual({ doc, page=1, selectedField, onFieldClic
       {field("CPF", doc.data.cpf, "cpf")}
       {field("Comarca", doc.data.formCity, "formCity")}
       {field("Emissão", doc.data.issueDate, "issueDate")}
-      {field("Validade", doc.data.expiryDate, "expiryDate")}
+      <div title="Verifique se a validade não expirou">{field("⏳ Validade", doc.data.expiryDate, "expiryDate")}</div>
       <SignatureField path={doc.data.signature} label="Assinatura do Escrivão" missing={doc.missingSignature}/>
+      {contextNote}
       {expiredStamp}
     </DocSheet>
   );

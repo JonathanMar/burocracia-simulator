@@ -1,4 +1,5 @@
 import ClickableField from './ClickableField.jsx';
+import PhotoPlaceholder from './PhotoPlaceholder.jsx';
 
 export default function FichaCadastral({ doc, selectedField, onFieldClick, suspectedFields=[] }) {
   const sf = suspectedFields;
@@ -12,12 +13,28 @@ export default function FichaCadastral({ doc, selectedField, onFieldClick, suspe
         <div style={{fontSize:11,fontWeight:"bold",color:"#1e3d7a",letterSpacing:0.8}}>FORMULÁRIO DE CADASTRO</div>
         <div style={{fontSize:9,color:"#777",marginTop:2}}>Digitalizações Infernais Ltda. • Uso Interno</div>
       </div>
-      {field("Nome Completo",   doc.data.formName,   "name")}
-      {field("CPF",             doc.data.cpf,        "cpf")}
-      {field("Cidade/Município",doc.data.formCity,   "city")}
-      {field("Data Referência", doc.data.issueDate,  "issueDate")}
+
+      {/* Photo + main fields side by side */}
+      <div style={{display:"flex",gap:8,marginBottom:4}}>
+        <div style={{flexShrink:0}}>
+          <div style={{fontSize:7,color:"#999",marginBottom:2,textAlign:"center"}}>FOTO FICHA</div>
+          <PhotoPlaceholder features={doc.data.fichaPhotoFeatures} mismatch={false} label="ficha"/>
+        </div>
+        <div style={{flex:1}}>
+          {field("Nome Completo",    doc.data.formName,  "name")}
+          {field("CPF",             doc.data.cpf,       "cpf")}
+          {field("Cidade/Município", doc.data.formCity,  "city")}
+        </div>
+      </div>
+
+      {/* Date field — renamed for clarity */}
+      <div title="Data em que o documento foi emitido — compare com o campo 'Emissão' no documento">
+        {field("Data de Emissão ⓘ", doc.data.issueDate, "issueDate")}
+      </div>
+
       {(doc.type==="CNH") && field("Categoria CNH", doc.data.cnhCategory, "cnhCategory")}
       {(doc.type==="LAUDO"||doc.type==="ATESTADO") && field("CID", doc.data.cid, "cid")}
+
       <div style={{marginTop:12,borderTop:"1px dashed #a0b8d8",paddingTop:8,display:"flex",justifyContent:"flex-end",gap:8}}>
         {["Responsável","Data"].map(l=>(
           <div key={l} style={{textAlign:"center",borderTop:"1px solid #1e3d7a",paddingTop:3,width:68}}>

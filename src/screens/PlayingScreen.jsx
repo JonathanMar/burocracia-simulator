@@ -3,7 +3,7 @@ import { playSound } from '../audio/sounds.js';
 import { startMusic, stopMusic } from '../audio/music.js';
 import { useSoundToggle } from '../audio/useSoundToggle.js';
 import { genLevel, rf, p2 } from '../game/docGenerator.js';
-import { CORRECT_FOLDER } from '../constants/game.js';
+import { CORRECT_FOLDER, ISSUE_EXPLANATIONS } from '../constants/game.js';
 import { ACHIEVEMENTS } from '../constants/achievements.js';
 import { RANDOM_EVENTS } from '../constants/events.js';
 import { PRINTER_NAME, PRINTER_EVENTS } from '../constants/printer.js';
@@ -370,7 +370,7 @@ export default function PlayingScreen({ initialDocs, initialLevel, onGameOver, o
           playSound("error_buzz",0.4); flashScreen("#ff220033");
           setScore(s=>Math.max(0,s-pen));
           setStats(s=>{const ns={...s,errors:s.errors+1,dayErrors:(s.dayErrors||0)+1};checkAch(ns,null);return ns;});
-          addToast(`⚠ Aprovado com ${doc.issues.length} erro(s)! -${pen} pts`,"error");
+          addToast(`⚠ Aprovado com erro: "${doc.issues[0] || 'erro'}" — -${pen} pts`,"error");
           addDecision("⚠",`${doc.type} aprovado c/ erros`,"#cc5555");
           setWrongDocs(w=>[...w,{...doc,decision:"approved_wrong"}]);
           breakCombo();
@@ -401,7 +401,7 @@ export default function PlayingScreen({ initialDocs, initialLevel, onGameOver, o
       playSound("error_buzz",0.5); flashScreen("#ff220033");
       setScore(s=>Math.max(0,s-40));
       setStats(s=>{const ns={...s,errors:s.errors+1,dayErrors:(s.dayErrors||0)+1};checkAch(ns,null);return ns;});
-      addToast("❌ Válido rejeitado! -40 pts","error");
+      addToast(`❌ Documento válido rejeitado! Era válido. -40 pts`,"error");
       addDecision("❌",`${doc.type} rejeitado indevidamente`,"#cc3333");
       setWrongDocs(w=>[...w,{...doc,decision:"rejected_wrong"}]);
       breakCombo();
