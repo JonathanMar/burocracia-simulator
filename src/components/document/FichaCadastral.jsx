@@ -1,0 +1,30 @@
+import ClickableField from './ClickableField.jsx';
+
+export default function FichaCadastral({ doc, selectedField, onFieldClick, suspectedFields=[] }) {
+  const sf = suspectedFields;
+  const fp = name => sf.includes(`ficha:${name}`);
+  const field = (label, value, name) => (
+    <ClickableField fieldId={`ficha:${name}`} label={label} value={value} side="ficha" selectedField={selectedField} onFieldClick={onFieldClick} suspicious={fp(name)}/>
+  );
+  return (
+    <div style={{background:"#eef2f8",border:"1px solid #a0b8d8",borderRadius:3,padding:"12px 14px",fontFamily:"Georgia,serif",boxShadow:"2px 4px 10px #00000020",fontSize:11}}>
+      <div style={{borderBottom:"2px solid #1e3d7a",paddingBottom:6,marginBottom:9}}>
+        <div style={{fontSize:11,fontWeight:"bold",color:"#1e3d7a",letterSpacing:0.8}}>FORMULÁRIO DE CADASTRO</div>
+        <div style={{fontSize:9,color:"#777",marginTop:2}}>Digitalizações Infernais Ltda. • Uso Interno</div>
+      </div>
+      {field("Nome Completo",   doc.data.formName,   "name")}
+      {field("CPF",             doc.data.cpf,        "cpf")}
+      {field("Cidade/Município",doc.data.formCity,   "city")}
+      {field("Data Referência", doc.data.issueDate,  "issueDate")}
+      {(doc.type==="CNH") && field("Categoria CNH", doc.data.cnhCategory, "cnhCategory")}
+      {(doc.type==="LAUDO"||doc.type==="ATESTADO") && field("CID", doc.data.cid, "cid")}
+      <div style={{marginTop:12,borderTop:"1px dashed #a0b8d8",paddingTop:8,display:"flex",justifyContent:"flex-end",gap:8}}>
+        {["Responsável","Data"].map(l=>(
+          <div key={l} style={{textAlign:"center",borderTop:"1px solid #1e3d7a",paddingTop:3,width:68}}>
+            <div style={{fontSize:8,color:"#999"}}>{l}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
