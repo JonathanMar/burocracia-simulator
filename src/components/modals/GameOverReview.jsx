@@ -49,7 +49,7 @@ function GameOverReviewModal({ wrongDocs, onClose }) {
   );
 }
 
-export default function GameOverReviewWrapper({ wrongDocs, grade, gc, score, stats, unlocked, onStartGame, onMenu, onEndless }) {
+export default function GameOverReviewWrapper({ wrongDocs, grade, gc, score, stats, unlocked, corruption = 0, onStartGame, onMenu, onEndless }) {
   const [showReview, setShowReview] = useState(false);
   const quoteMap = {
     D:'"Você está despedido." — Sr. Figueiredo',
@@ -60,7 +60,8 @@ export default function GameOverReviewWrapper({ wrongDocs, grade, gc, score, sta
   };
   const salaryBase = { S: 4200, A: 3100, B: 2300, C: 1500, D: 0 }[grade];
   const salaryDeductions = stats.errors * 28 + (stats.wrongFolders || 0) * 15;
-  const salaryFinal = Math.max(0, salaryBase - salaryDeductions);
+  const auditPenalty = corruption >= 3 ? corruption * 80 : 0;
+  const salaryFinal = Math.max(0, salaryBase - salaryDeductions - auditPenalty);
 
   // Endless available for everyone — it's the natural continuation
   const canEndless = true;
@@ -75,6 +76,18 @@ export default function GameOverReviewWrapper({ wrongDocs, grade, gc, score, sta
         <div style={{color:gc,fontSize:44,fontWeight:"bold",marginBottom:4}}>{grade}</div>
         <div style={{color:"#aa8800",fontSize:24,fontWeight:"bold",marginBottom:8}}>{score} pts</div>
 
+        {/* Auditoria warning */}
+        {corruption >= 3 && (
+          <div style={{background:"#1a0800",border:"2px solid #cc4400",borderRadius:5,padding:"8px 14px",marginBottom:12,fontSize:10}}>
+            <div style={{color:"#ff6600",fontWeight:"bold",marginBottom:4}}>🔍 RESULTADO DA AUDITORIA</div>
+            <div style={{color:"#cc8844",lineHeight:1.7}}>
+              {corruption} registros de corrupção encontrados.<br/>
+              Penalidade aplicada: -R$ {auditPenalty.toLocaleString('pt-BR')},00<br/>
+              <span style={{color:"#664422",fontSize:9}}>Ref. Art. 9º, Código de Conduta Interna</span>
+            </div>
+          </div>
+        )}
+
         {/* Holerite */}
         <div style={{background:"#0a0a08",border:`1px solid ${salaryFinal>0?"#336633":"#663333"}`,borderRadius:5,padding:"10px 16px",marginBottom:14}}>
           <div style={{color:"#666",fontSize:9,letterSpacing:1,marginBottom:6}}>💰 HOLERITE — DIGITALIZAÇÕES INFERNAIS LTDA.</div>
@@ -84,6 +97,10 @@ export default function GameOverReviewWrapper({ wrongDocs, grade, gc, score, sta
             {salaryDeductions > 0 && <>
               <span style={{color:"#777",textAlign:"left"}}>Descontos ({stats.errors} erro{stats.errors!==1?"s":""})</span>
               <span style={{color:"#cc5555"}}>-R$ {salaryDeductions.toLocaleString('pt-BR')},00</span>
+            </>}
+            {auditPenalty > 0 && <>
+              <span style={{color:"#ff6600",textAlign:"left"}}>Penalidade auditoria ({corruption} suborno{corruption!==1?"s":""})</span>
+              <span style={{color:"#cc4400"}}>-R$ {auditPenalty.toLocaleString('pt-BR')},00</span>
             </>}
             <span style={{color:"#999",textAlign:"left",borderTop:"1px solid #222",paddingTop:4}}>Total líquido</span>
             <span style={{color:salaryFinal>0?"#ffcc00":"#cc3333",fontWeight:"bold",borderTop:"1px solid #222",paddingTop:4}}>R$ {salaryFinal.toLocaleString('pt-BR')},00</span>

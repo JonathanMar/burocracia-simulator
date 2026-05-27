@@ -16,6 +16,9 @@ export const MEMORANDOS = [
   { day:3, text:"Atenção: documentos com rasura no campo CPF são automaticamente INVÁLIDOS. Memorando 07/2026." },
   { day:4, text:"Novo protocolo: páginas faltando em CONTRATOS geram penalidade dobrada. Memorando 11/2026 — Auditoria Interna." },
   { day:5, text:"ALERTA: qualquer documento salvo na pasta errada será debitado do salário. Memorando 13/2026." },
+  { day:6, text:"Volume dobrado. Prioridade: laudos e atestados médicos devem ser processados primeiro. Memorando 15/2026." },
+  { day:7, text:"Dois estagiários em formação. Não delegar documentos com CPF duplicado a eles. Memorando 17/2026." },
+  { day:8, text:"MIGRAÇÃO DE SISTEMA: backup de todos os laudos e certidões obrigatório hoje. Memorando 19/2026." },
 ];
 
 export const TUTORIAL_STEPS = [
@@ -38,4 +41,37 @@ export const DAY_RULES = {
   3: ["⚠ CPF com rasura = inválido automaticamente","Documentos podem ter CPF duplicado (verifique)","Atualizações do sistema podem travar o PC"],
   4: ["⚠ Páginas faltando em CONTRATOS = penalidade dobrada","Mais eventos aleatórios hoje","Carimbo ausente em contratos é motivo de rejeição"],
   5: ["⚠ Pasta errada = débito em salário","Volume máximo de documentos","A impressora começa com saúde reduzida"],
+  6: ["⚠ Volume dobrado — priorize laudos e atestados","Subornos podem ocorrer — recuse para manter reputação","CPF duplicado mais frequente nesta fase"],
+  7: ["⚠ Estagiários ativos — documentos críticos não delegar","Foto suspeita a partir de agora é motivo de rejeição","Verifique assinatura em TODOS os documentos"],
+  8: ["⚠ DIA DE BACKUP: salve todo laudo e certidão imediatamente","Sistema legado com instabilidade — mais eventos de PC","Último dia — sem segunda chance"],
+};
+
+// Reactions shown briefly when a document is rejected (or wrongly approved)
+export const REJECTION_REACTIONS = {
+  // Player rejected an invalid doc correctly
+  correct: [
+    "Tudo bem, vou providenciar a correção...",
+    "Entendido. Volto quando regularizar.",
+    "Ok... obrigado pela atenção.",
+    "Mas eu vim de tão longe...",
+    "Vou tentar de novo amanhã.",
+    "Esse CPF foi gerado pelo cartório! Eles que erraram...",
+    "[A pessoa sai cabisbaixa]",
+  ],
+  // Player wrongly rejected a valid doc
+  wrongRejection: [
+    "Mas está tudo correto! Pode checar de novo?",
+    "Posso falar com o supervisor?",
+    "Esse documento foi validado em outra agência!",
+    "Minha advogada vai ouvir sobre isso.",
+    "[A pessoa exige recibo da rejeição]",
+  ],
+  // Doc had an urgent context and was rejected
+  urgent: [
+    "A cirurgia está marcada para amanhã...",
+    "Minha família está esperando lá fora.",
+    "Tenho um embarque em 6 horas.",
+    "O paciente está em estado crítico.",
+    "[A pessoa chora discretamente]",
+  ],
 };

@@ -55,6 +55,7 @@ export default function App() {
         stats={gameOverData.stats}
         wrongDocs={gameOverData.wrongDocs}
         unlocked={gameOverData.unlocked}
+        corruption={gameOverData.corruption || 0}
         onStartGame={startGame}
         onMenu={() => { stopMusic(); setPhase('intro'); }}
         onEndless={startEndless}

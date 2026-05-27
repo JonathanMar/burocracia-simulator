@@ -7,6 +7,7 @@ import { CORRECT_FOLDER, ISSUE_EXPLANATIONS } from '../constants/game.js';
 import { ACHIEVEMENTS } from '../constants/achievements.js';
 import { RANDOM_EVENTS } from '../constants/events.js';
 import { PRINTER_NAME, PRINTER_EVENTS } from '../constants/printer.js';
+import { REJECTION_REACTIONS } from '../constants/story.js';
 
 import TopBar from '../components/game/TopBar.jsx';
 import EventBanner from '../components/game/EventBanner.jsx';
@@ -19,6 +20,8 @@ import FileSaveModal from '../components/modals/FileSaveModal.jsx';
 import DailyLogModal from '../components/modals/DailyLogModal.jsx';
 import StoryDialog from '../components/modals/StoryDialog.jsx';
 import DailyRulesBriefing from '../components/modals/DailyRulesBriefing.jsx';
+import RulebookModal from '../components/modals/RulebookModal.jsx';
+import BriberyModal from '../components/modals/BriberyModal.jsx';
 import ScanningOverlay from '../components/modals/ScanningOverlay.jsx';
 import Toast from '../components/ui/Toast.jsx';
 import ScreenFlash from '../components/ui/ScreenFlash.jsx';
@@ -51,10 +54,13 @@ export default function PlayingScreen({ initialDocs, initialLevel, onGameOver, o
   const [decisionLog,   setDecisionLog]   = useState([]);
   const [hoveredDoc,    setHoveredDoc]    = useState(null);
   const [showRules,     setShowRules]     = useState(false);
+  const [showRulebook,  setShowRulebook]  = useState(false);
+  const [showBribery,   setShowBribery]   = useState(false);
   const [wrongDocs,     setWrongDocs]     = useState([]);
   const [docsPerMin,    setDocsPerMin]    = useState(0);
-  const [combo,         setCombo]         = useState(0);  // consecutive correct decisions
-  const [comboMult,     setComboMult]     = useState(1.0); // score multiplier
+  const [combo,         setCombo]         = useState(0);
+  const [comboMult,     setComboMult]     = useState(1.0);
+  const [corruption,    setCorruption]    = useState(0);
   const comboMultRef = useRef(1.0);
   const dpmRef = useRef({count:0, since:Date.now()});
   useEffect(()=>{ comboMultRef.current = comboMult; },[comboMult]);
@@ -173,6 +179,8 @@ export default function PlayingScreen({ initialDocs, initialLevel, onGameOver, o
   useEffect(()=>{ scoreRef.current    = score;    },[score]);
   useEffect(()=>{ wrongDocRef.current = wrongDocs;},[wrongDocs]);
   useEffect(()=>{ unlockedRef.current = unlocked; },[unlocked]);
+  const corruptionRef = useRef(0);
+  useEffect(()=>{ corruptionRef.current = corruption; },[corruption]);
 
   // Re-wire timer with stable refs
   useEffect(()=>{
@@ -183,7 +191,7 @@ export default function PlayingScreen({ initialDocs, initialLevel, onGameOver, o
           clearInterval(timerRef.current);
           stopMusic();
           playSound("blackout", 0.9);
-          onGameOver({ score: scoreRef.current, stats: statsRef.current, wrongDocs: wrongDocRef.current, unlocked: unlockedRef.current });
+          onGameOver({ score: scoreRef.current, stats: statsRef.current, wrongDocs: wrongDocRef.current, unlocked: unlockedRef.current, corruption: corruptionRef.current });
           return 0;
         }
         return t-1;
@@ -217,6 +225,7 @@ export default function PlayingScreen({ initialDocs, initialLevel, onGameOver, o
       if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
       if (e.key === "a" || e.key === "A") { if (selectedDoc) handleApprove(selectedDoc); }
       if (e.key === "r" || e.key === "R") { if (selectedDoc) handleReject(selectedDoc); }
+      if (e.key === "k" || e.key === "K") { setShowRulebook(r => !r); }
       if (e.key === "Tab") {
         e.preventDefault();
         const p = docsRef.current.filter(d => !d.savedPath && !d.scanned);
@@ -252,10 +261,21 @@ export default function PlayingScreen({ initialDocs, initialLevel, onGameOver, o
           else{addToast("🧑‍💼 Estagiário errou... -20 pts","error");setScore(s=>Math.max(0,s-20));setDocs(ds=>ds.filter(d=>d.id!==target.id));}
         }
       }
+      if(ev.effect==="bribery"){
+        // Only available from day 3+, and only when there are pending invalid docs
+        const invalidPending = docsRef.current.filter(d=>!d.scanned&&!d.savedPath&&!d.isValid);
+        if(level >= 3 && invalidPending.length > 0){
+          setShowBribery(true);
+          return; // don't auto-dismiss — BriberyModal handles dismissal
+        } else {
+          // Not eligible: skip silently
+          return;
+        }
+      }
       if(ev.id!=="colleague") setTimeout(()=>{setActiveEvent(null);setFrozen(false);},ev.duration);
     },14000);
     return()=>clearInterval(eventRef.current);
-  },[addToast,checkAch,activeEvent]);
+  },[addToast,checkAch,activeEvent,level]);
 
   // Printer random events
   useEffect(()=>{
@@ -397,6 +417,12 @@ export default function PlayingScreen({ initialDocs, initialLevel, onGameOver, o
   }
 
   function handleReject(doc){
+    // Pick a reaction message based on context
+    const reactionPool = doc.isValid
+      ? REJECTION_REACTIONS.wrongRejection
+      : (doc.context ? REJECTION_REACTIONS.urgent : REJECTION_REACTIONS.correct);
+    const reaction = rf(reactionPool);
+
     if(doc.isValid){
       playSound("error_buzz",0.5); flashScreen("#ff220033");
       setScore(s=>Math.max(0,s-40));
@@ -416,7 +442,30 @@ export default function PlayingScreen({ initialDocs, initialLevel, onGameOver, o
       bumpDpm();
       hitCombo();
     }
+    // Show reaction after a brief delay
+    setTimeout(() => addToast(`💬 "${reaction}"`, "info"), 400);
     setDocs(ds=>ds.filter(d=>d.id!==doc.id)); setSelectedDoc(null);
+  }
+
+  function handleBriberyAccept(amount){
+    setCorruption(c => c + 1);
+    setScore(s => s + amount);
+    addToast(`💰 Suborno aceito: +${amount} pts. Corrupção registrada.`,"error");
+    addDecision("💰",`Suborno aceito (R$ ${amount})`,"#cc8800");
+    setActiveEvent(null);
+    setShowBribery(false);
+    // If 3 corruptions accumulated, warn
+    setCorruption(c => {
+      if(c >= 3) addToast("⚠ 3 registros de corrupção — auditoria no final!","error");
+      return c;
+    });
+  }
+
+  function handleBriberyRefuse(){
+    addToast("🚫 Suborno recusado. Integridade mantida.","success");
+    addDecision("🚫","Suborno recusado","#4488ff");
+    setActiveEvent(null);
+    setShowBribery(false);
   }
 
   function handleSave(doc, path, correct){
@@ -476,6 +525,8 @@ export default function PlayingScreen({ initialDocs, initialLevel, onGameOver, o
       {showStory&&<StoryDialog day={level} onClose={handleStoryClose}/>}
       {showDailyLog&&<DailyLogModal stats={stats} level={level} score={score} timeLeft={timeLeft} onClose={handleDailyLogClose}/>}
       {showRules&&!showStory&&<DailyRulesBriefing day={level} onClose={()=>setShowRules(false)}/>}
+      {showRulebook&&<RulebookModal day={level} onClose={()=>setShowRulebook(false)}/>}
+      {showBribery&&<BriberyModal onAccept={handleBriberyAccept} onRefuse={handleBriberyRefuse}/>}
       <AchievementPopup achievement={achievement}/>
       <EventBanner event={activeEvent} onColleagueAccept={handleColleagueAccept} onColleagueDecline={handleColleagueDecline}/>
       <ScanningOverlay scanning={scanning}/>
@@ -495,6 +546,8 @@ export default function PlayingScreen({ initialDocs, initialLevel, onGameOver, o
         unlocked={unlocked}
         combo={combo}
         comboMult={comboMult}
+        onOpenRulebook={() => setShowRulebook(true)}
+        corruption={corruption}
       />
 
       <div style={{flex:1,display:"grid",gridTemplateColumns:"210px 1fr 250px",overflow:"hidden",minHeight:0}}>

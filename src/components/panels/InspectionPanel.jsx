@@ -4,14 +4,55 @@ import DocumentVisual from '../document/DocumentVisual.jsx';
 import FichaCadastral from '../document/FichaCadastral.jsx';
 import FieldCompareResult from '../document/FieldCompareResult.jsx';
 
+const STAMP_CSS = `
+  @keyframes stampDrop {
+    0%   { transform: translateY(-40px) rotate(-6deg) scale(1.15); opacity: 0; }
+    60%  { transform: translateY(4px)   rotate(1deg)  scale(0.97); opacity: 1; }
+    80%  { transform: translateY(-2px)  rotate(-1deg) scale(1.01); opacity: 1; }
+    100% { transform: translateY(0px)   rotate(0deg)  scale(1.00); opacity: 1; }
+  }
+  @keyframes stampFade {
+    0%   { opacity: 1; }
+    70%  { opacity: 1; }
+    100% { opacity: 0; }
+  }
+`;
+
+function StampOverlay({ type }) {
+  if (!type) return null;
+  const isApprove = type === 'approve';
+  return (
+    <div style={{
+      position:"absolute",inset:0,zIndex:30,pointerEvents:"none",
+      display:"flex",alignItems:"center",justifyContent:"center",
+    }}>
+      <div style={{
+        border:`4px solid ${isApprove?"#22aa44":"#cc2222"}`,
+        color: isApprove?"#22aa44":"#cc2222",
+        padding:"12px 24px",borderRadius:4,
+        fontSize:22,fontWeight:"bold",letterSpacing:4,
+        fontFamily:"'Courier New',monospace",
+        transform:"rotate(-8deg)",
+        animation:"stampDrop 0.35s ease forwards, stampFade 0.9s 0.1s ease forwards",
+        background: isApprove?"#00110033":"#11000033",
+        boxShadow:`0 0 22px ${isApprove?"#22aa4444":"#cc222244"} inset`,
+        textShadow:`0 0 8px ${isApprove?"#22aa44":"#cc2222"}`,
+      }}>
+        {isApprove ? "DIGITALIZADO" : "DEVOLVIDO"}
+      </div>
+    </div>
+  );
+}
+
 export default function InspectionPanel({ doc, onApprove, onReject, frozen, blackout, onFieldCompare, suspectedFields, onToggleSuspect }) {
   const [activePage, setActivePage]     = useState(1);
   const [notes, setNotes]               = useState([]);
   const [selectedField, setSelectedField] = useState(null);
   const [compareResult, setCompareResult] = useState(null);
+  const [citedIssues, setCitedIssues]   = useState([]);  // { label, docVal, fichaVal }
+  const [stampType, setStampType]       = useState(null); // 'approve' | 'reject' | null
 
-  // Reset on doc change - use useEffect from React (imported in parent but need it here)
-  // We'll use a key-based reset via the parent instead, but for safety use a useState pattern
+  // Reset on doc change
   const [lastDocId, setLastDocId] = useState(doc?.id);
   if (doc?.id !== lastDocId) {
     setLastDocId(doc?.id);
@@ -19,6 +60,8 @@ export default function InspectionPanel({ doc, onApprove, onReject, frozen, blac
     setNotes([]);
     setSelectedField(null);
     setCompareResult(null);
+    setCitedIssues([]);
+    setStampType(null);
   }
 
   function handleFieldClick(field) {
@@ -37,9 +80,34 @@ export default function InspectionPanel({ doc, onApprove, onReject, frozen, blac
     }
     const same = selectedField.value === field.value;
     playSound(same ? "match_ok" : "match_diff", 0.7);
-    setCompareResult({ first: selectedField, second: field });
+    setCompareResult({ first: selectedField, second: field, same });
     setSelectedField(null);
     onFieldCompare();
+  }
+
+  function handleCiteIssue() {
+    if (!compareResult || compareResult.same) return;
+    const entry = {
+      label: compareResult.first.label,
+      docVal: compareResult.first.side === 'documento' ? compareResult.first.value : compareResult.second.value,
+      fichaVal: compareResult.first.side === 'ficha' ? compareResult.first.value : compareResult.second.value,
+    };
+    // Avoid duplicates
+    if (!citedIssues.find(c => c.label === entry.label)) {
+      setCitedIssues(ci => [...ci, entry]);
+      playSound("click_field", 0.8);
+    }
+    setCompareResult(null);
+  }
+
+  function handleApproveWithStamp() {
+    setStampType('approve');
+    setTimeout(() => { setStampType(null); onApprove(doc); }, 700);
+  }
+
+  function handleRejectWithStamp() {
+    setStampType('reject');
+    setTimeout(() => { setStampType(null); onReject(doc); }, 700);
   }
 
   if (!doc) return (
@@ -56,6 +124,8 @@ export default function InspectionPanel({ doc, onApprove, onReject, frozen, blac
 
   return (
     <div style={{height:"100%",display:"flex",flexDirection:"column",fontFamily:"'Courier New',monospace",gap:0,position:"relative"}}>
+      <style>{STAMP_CSS}</style>
+      <StampOverlay type={stampType}/>
 
       {/* Freeze / Blackout overlay */}
       {(frozen || blackout) && (
@@ -93,6 +163,21 @@ export default function InspectionPanel({ doc, onApprove, onReject, frozen, blac
           <span style={{color:"#999",fontSize:10}}>"{selectedField.value}"</span>
           <span style={{color:"#777",fontSize:10,marginLeft:"auto"}}>Clique no mesmo campo do outro lado para comparar</span>
           <button onClick={()=>setSelectedField(null)} style={{background:"transparent",border:"1px solid #444",color:"#777",padding:"2px 8px",borderRadius:3,cursor:"pointer",fontFamily:"'Courier New',monospace",fontSize:10}}>✕</button>
+        </div>
+      )}
+
+      {/* Cited issues strip */}
+      {citedIssues.length > 0 && (
+        <div style={{flexShrink:0,background:"#1a0800",borderBottom:"1px solid #442200",padding:"5px 14px",display:"flex",gap:6,flexWrap:"wrap",alignItems:"center"}}>
+          <span style={{color:"#cc5500",fontSize:9,letterSpacing:0.5}}>⚑ CITADO:</span>
+          {citedIssues.map((c,i) => (
+            <span key={i} style={{
+              background:"#2a0a00",border:"1px solid #883300",color:"#ff8844",
+              fontSize:10,padding:"1px 8px",borderRadius:3,
+            }} title={`Doc: "${c.docVal}" | Ficha: "${c.fichaVal}"`}>
+              {c.label} <span style={{color:"#553322",cursor:"pointer"}} onClick={()=>setCitedIssues(ci=>ci.filter((_,j)=>j!==i))}>×</span>
+            </span>
+          ))}
         </div>
       )}
 
@@ -134,12 +219,12 @@ export default function InspectionPanel({ doc, onApprove, onReject, frozen, blac
       {/* Action buttons */}
       <div style={{flexShrink:0,padding:"10px 14px",borderTop:"1px solid #0f0f1a",display:"flex",gap:10,background:"#030307"}}>
         <button
-          onClick={() => { playSound("approve"); onApprove(doc); }}
+          onClick={handleApproveWithStamp}
           disabled={!canApprove}
           style={{flex:1,padding:"12px 0",background:canApprove?"#0a200a":"#080810",border:`1px solid ${canApprove?"#337733":"#1a1a1a"}`,color:canApprove?"#55bb55":"#333",borderRadius:5,cursor:canApprove?"pointer":"default",fontFamily:"'Courier New',monospace",fontSize:13,fontWeight:"bold",transition:"all 0.2s"}}
         >✓ APROVADO — DIGITALIZAR</button>
         <button
-          onClick={() => { playSound("reject"); onReject(doc); }}
+          onClick={handleRejectWithStamp}
           disabled={!canAct}
           style={{flex:1,padding:"12px 0",background:canAct?"#200a0a":"#080810",border:`1px solid ${canAct?"#773333":"#1a1a1a"}`,color:canAct?"#bb5555":"#333",borderRadius:5,cursor:canAct?"pointer":"default",fontFamily:"'Courier New',monospace",fontSize:13,fontWeight:"bold",transition:"all 0.2s"}}
         >✗ REJEITAR</button>
@@ -151,6 +236,7 @@ export default function InspectionPanel({ doc, onApprove, onReject, frozen, blac
           first={compareResult.first}
           second={compareResult.second}
           onDismiss={() => setCompareResult(null)}
+          onCite={!compareResult.same ? handleCiteIssue : null}
         />
       )}
     </div>
