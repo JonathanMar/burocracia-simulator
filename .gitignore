@@ -9,6 +9,7 @@ pnpm-debug.log*
 
 # Build
 dist/
+dist-standalone/
 build/
 
 # Vite

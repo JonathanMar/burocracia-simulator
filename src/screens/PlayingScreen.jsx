@@ -78,6 +78,10 @@ export default function PlayingScreen({ initialDocs, initialLevel, onGameOver, o
 
   const toastId     = useRef(0);
   const timerRef    = useRef(null);
+  const showDailyLogRef = useRef(false);
+  const showStoryRef    = useRef(false);
+  useEffect(()=>{ showDailyLogRef.current = showDailyLog; },[showDailyLog]);
+  useEffect(()=>{ showStoryRef.current    = showStory;    },[showStory]);
   const eventRef    = useRef(null);
   const printerRef  = useRef(null);
   const deathRef    = useRef(null);
@@ -186,6 +190,8 @@ export default function PlayingScreen({ initialDocs, initialLevel, onGameOver, o
   useEffect(()=>{
     clearInterval(timerRef.current);
     timerRef.current = setInterval(()=>{
+      // Freeze timer while daily log or story dialog is visible
+      if(showDailyLogRef.current || showStoryRef.current) return;
       setTimeLeft(t=>{
         if(t<=1){
           clearInterval(timerRef.current);
@@ -268,7 +274,8 @@ export default function PlayingScreen({ initialDocs, initialLevel, onGameOver, o
           setShowBribery(true);
           return; // don't auto-dismiss — BriberyModal handles dismissal
         } else {
-          // Not eligible: skip silently
+          // Not eligible: clear event banner immediately
+          setActiveEvent(null);
           return;
         }
       }

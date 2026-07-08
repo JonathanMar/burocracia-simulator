@@ -51,6 +51,7 @@ export default function InspectionPanel({ doc, onApprove, onReject, frozen, blac
   const [compareResult, setCompareResult] = useState(null);
   const [citedIssues, setCitedIssues]   = useState([]);  // { label, docVal, fichaVal }
   const [stampType, setStampType]       = useState(null); // 'approve' | 'reject' | null
+  const [labelHint, setLabelHint]       = useState(false); // brief flash when labels don't match
 
   // Reset on doc change
   const [lastDocId, setLastDocId] = useState(doc?.id);
@@ -75,6 +76,9 @@ export default function InspectionPanel({ doc, onApprove, onReject, frozen, blac
       return;
     }
     if (selectedField.label !== field.label) {
+      // Labels don't match — flash a hint and switch selection
+      setLabelHint(true);
+      setTimeout(() => setLabelHint(false), 600);
       setSelectedField(field);
       return;
     }
@@ -155,6 +159,12 @@ export default function InspectionPanel({ doc, onApprove, onReject, frozen, blac
         )}
       </div>
 
+      {/* Label mismatch flash */}
+      {labelHint && (
+        <div style={{flexShrink:0,background:"#1a0808",borderBottom:"1px solid #441111",padding:"4px 14px",display:"flex",alignItems:"center",gap:6,animation:"slideIn 0.15s ease"}}>
+          <span style={{color:"#cc4444",fontSize:10}}>⚠ Campos com nomes diferentes não podem ser comparados — selecione o mesmo campo no outro lado</span>
+        </div>
+      )}
       {/* Compare hint */}
       {selectedField && (
         <div style={{flexShrink:0,background:"#1a1a08",borderBottom:"1px solid #333300",padding:"6px 14px",display:"flex",alignItems:"center",gap:10}}>
