@@ -7,20 +7,24 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       react(),
-      ...(standalone ? [viteSingleFile()] : []),
+      ...(standalone ? [viteSingleFile({ removeViteModuleLoader: true })] : []),
     ],
     build: {
-      // Audio is embedded as base64 — suppress the chunk size warning
+      // Audio embedded as base64 — suppress chunk size warning
       chunkSizeWarningLimit: 4096,
-      // Inline ALL assets into the single HTML when standalone
+      // Inline all small assets (standalone: everything)
       assetsInlineLimit: standalone ? 100 * 1024 * 1024 : 4096,
-      // No chunk splitting in standalone mode
+      // Vite 5: rollupOptions for single-file
       rollupOptions: standalone
-        ? { output: { inlineDynamicImports: true } }
+        ? {
+            output: {
+              // No code-splitting in standalone mode
+              manualChunks: undefined,
+            },
+          }
         : {},
-      // Output to dist/ normally, dist-standalone/ for single-file
+      // Output dir
       outDir: standalone ? "dist-standalone" : "dist",
     },
   };
 });
-
