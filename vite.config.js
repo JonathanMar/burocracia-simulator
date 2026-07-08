@@ -1,14 +1,17 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import { viteSingleFile } from "vite-plugin-singlefile";
 
-export default defineConfig(({ mode }) => {
+export default defineConfig(async ({ mode }) => {
   const standalone = mode === "standalone";
+  
+  const plugins = [react()];
+  if (standalone) {
+    const { viteSingleFile } = await import("vite-plugin-singlefile");
+    plugins.push(viteSingleFile({ removeViteModuleLoader: true }));
+  }
+
   return {
-    plugins: [
-      react(),
-      ...(standalone ? [viteSingleFile({ removeViteModuleLoader: true })] : []),
-    ],
+    plugins,
     build: {
       // Audio embedded as base64 — suppress chunk size warning
       chunkSizeWarningLimit: 4096,
