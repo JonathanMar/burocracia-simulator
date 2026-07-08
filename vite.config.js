@@ -39,6 +39,11 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
+    root: process.cwd(),
+    base: "./",
+    resolve: {
+      preserveSymlinks: true,
+    },
     plugins,
     build: {
       chunkSizeWarningLimit: 4096,
