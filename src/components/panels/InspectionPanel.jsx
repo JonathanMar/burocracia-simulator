@@ -90,7 +90,7 @@ export default function InspectionPanel({ doc, onApprove, onReject, frozen, blac
   }
 
   function handleCiteIssue() {
-    if (!compareResult || compareResult.same) return;
+    if (!compareResult) return;
     const entry = {
       label: compareResult.first.label,
       docVal: compareResult.first.side === 'documento' ? compareResult.first.value : compareResult.second.value,
@@ -246,7 +246,7 @@ export default function InspectionPanel({ doc, onApprove, onReject, frozen, blac
           first={compareResult.first}
           second={compareResult.second}
           onDismiss={() => setCompareResult(null)}
-          onCite={!compareResult.same ? handleCiteIssue : null}
+          onCite={handleCiteIssue}
         />
       )}
     </div>
