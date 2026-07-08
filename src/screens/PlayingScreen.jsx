@@ -279,7 +279,14 @@ export default function PlayingScreen({ initialDocs, initialLevel, onGameOver, o
           return;
         }
       }
-      if(ev.id!=="colleague") setTimeout(()=>{setActiveEvent(null);setFrozen(false);},ev.duration);
+      if(ev.id==="colleague") {
+        setTimeout(()=>{
+          setActiveEvent(current => current?.id === "colleague" ? null : current);
+          setFrozen(false);
+        }, ev.duration);
+      } else {
+        setTimeout(()=>{setActiveEvent(null);setFrozen(false);},ev.duration);
+      }
     },14000);
     return()=>clearInterval(eventRef.current);
   },[addToast,checkAch,activeEvent,level]);

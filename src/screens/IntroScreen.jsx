@@ -24,7 +24,6 @@ export default function IntroScreen({ onStart }) {
           <button onClick={()=>onStart(true)} style={{background:"#3a5a99",border:"none",color:"#fff",padding:"12px 28px",borderRadius:4,cursor:"pointer",fontFamily:"'Courier New',monospace",fontSize:13,fontWeight:"bold",letterSpacing:1}}>▶ COM TUTORIAL</button>
           <button onClick={()=>onStart(false)} style={{background:"#1a1a2e",border:"1px solid #444",color:"#aaa",padding:"12px 28px",borderRadius:4,cursor:"pointer",fontFamily:"'Courier New',monospace",fontSize:13,letterSpacing:1}}>▷ SEM TUTORIAL</button>
         </div>
-        <div style={{color:"#777",fontSize:10,marginTop:14}}>Sons carregados de <code style={{color:"#6688aa"}}>/public/sounds/</code></div>
       </div>
     </div>
   );

@@ -10,25 +10,6 @@ const FEATURES_INVALID = { hair: 'long',  glasses: false, beard: false };
 function makeDocs() {
   return [
     {
-      id: 't1', type: 'RG', pages: 1, expectedPages: 1,
-      data: {
-        name: 'João Silva', formName: 'João Silva',
-        city: 'São Paulo', formCity: 'São Paulo',
-        cpf: '529.982.247-25',
-        issueDate: '10/03/2023', expiryDate: '31/12/2030',
-        rg: '12.345.678-9', organ: 'SSP/SP',
-        cnhCategory: 'B', cnhNumber: '12345678',
-        signature: genSignature(), photoMismatch: false,
-        docPhotoFeatures: FEATURES_VALID, fichaPhotoFeatures: FEATURES_VALID,
-        cid: 'Z76.0', doctor: 'Dr. Henrique Costa', crm: 'CRM-SP 12345',
-      },
-      issues: [], isValid: true, scanned: false, savedPath: null,
-      aligned: true, hasGrampo: false, misaligned: false, physicalReady: true,
-      hasRasura: false, missingStamp: false, missingSignature: false,
-      isDuplicate: false, photoMismatch: false, urgentDeadline: null,
-      suspectedFields: [], context: null,
-    },
-    {
       id: 't2', type: 'RG', pages: 1, expectedPages: 1,
       data: {
         name: 'Maria Oliveira', formName: 'Maria Oliveira',
