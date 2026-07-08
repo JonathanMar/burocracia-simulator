@@ -269,6 +269,10 @@ Consequências imprevisíveis.
 
 # 🚀 Build para produção
 
+## 🌐 Build Padrão (Web)
+
+Gera os arquivos otimizados para deploy em servidores web (Vercel, Netlify, etc).
+
 ```bash
 npm run build
 ```
@@ -278,6 +282,25 @@ Os arquivos finais ficarão em:
 ```txt
 dist/
 ```
+
+## 📦 Build Standalone (Arquivo Único)
+
+Gera uma versão totalmente portátil do jogo. Ideal para rodar em ambientes corporativos restritos, computadores sem internet ou sem Node.js instalado.
+
+```bash
+npm run build:standalone
+```
+
+Os arquivos finais ficarão em:
+
+```txt
+dist-standalone/
+```
+
+Dentro desta pasta, você encontrará um único arquivo **`index.html`**. 
+- Todo o JavaScript, CSS, imagens e sons estão embutidos (inline) dentro deste arquivo.
+- Para jogar, basta dar um **duplo-clique** neste arquivo para abri-lo no seu navegador (Chrome, Edge, etc).
+- **Não precisa de servidor, terminal ou internet!**
 
 ---
 
