@@ -21,15 +21,16 @@ export default function FichaCadastral({ doc, selectedField, onFieldClick, suspe
           <PhotoPlaceholder features={doc.data.fichaPhotoFeatures} mismatch={false} label="ficha"/>
         </div>
         <div style={{flex:1}}>
-          {field("Nome Completo",    doc.data.formName,  "name")}
+          {field("Nome",            doc.data.name,      "name")}
           {field("CPF",             doc.data.cpf,       "cpf")}
-          {field("Cidade/Município", doc.data.formCity,  "city")}
+          <div style={{fontSize:8,color:"#888",marginTop:-4,marginBottom:4,paddingLeft:78}} title="Os dígitos verificadores devem ser calculados manualmente">⚑ Verifique os dígitos verificadores</div>
+          {field("Cidade",          doc.data.city,      "city")}
         </div>
       </div>
 
       {/* Date field — renamed for clarity */}
       <div title="Data em que o documento foi emitido — compare com o campo 'Emissão' no documento">
-        {field("Data de Emissão ⓘ", doc.data.issueDate, "issueDate")}
+        {field("Emissão", doc.data.issueDate, "issueDate")}
       </div>
 
       {(doc.type==="CNH") && field("Categoria CNH", doc.data.cnhCategory, "cnhCategory")}

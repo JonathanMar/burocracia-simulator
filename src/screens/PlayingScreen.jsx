@@ -434,10 +434,10 @@ export default function PlayingScreen({ initialDocs, initialLevel, onGameOver, o
     } else {
       playSound("reject",0.7); flashScreen("#00ff4422");
       const basePts = 25 + doc.issues.length * 5;
-      const pts = Math.round(basePts * comboMult);
+      const pts = Math.round(basePts * comboMultRef.current);
       setScore(s=>s+pts);
       setStats(s=>{const ns={...s,rejected:s.rejected+1,correctRejections:(s.correctRejections||0)+1};checkAch(ns,null);return ns;});
-      addToast(`✓ Erro detectado! +${pts} pts${comboMult>1?` (x${comboMult.toFixed(2)})`:""}`,"success");
+      addToast(`✓ Erro detectado! +${pts} pts${comboMultRef.current>1?` (x${comboMultRef.current.toFixed(2)})`:""}`,"success");
       addDecision("🔍",`${doc.type} rejeitado corretamente`,"#aa8800");
       bumpDpm();
       hitCombo();

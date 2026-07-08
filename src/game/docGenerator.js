@@ -4,9 +4,18 @@ export const rf = arr => arr[Math.floor(Math.random()*arr.length)];
 export const p2 = n => String(n).padStart(2,"0");
 
 export function generateCPF(valid=true){
-  const r=()=>Math.floor(Math.random()*9);
+  const r=()=>Math.floor(Math.random()*10);
   const d=Array.from({length:9},r);
-  if(!valid) return `${d[0]}${d[1]}${d[2]}.${d[3]}${d[4]}${d[5]}.${d[6]}${d[7]}${d[8]}-99`;
+  if(!valid){
+    // Compute correct digits then generate wrong ones (different by 1-2)
+    let s1v=d.reduce((a,v,i)=>a+v*(10-i),0);
+    let c1=(s1v*10)%11; if(c1>=10)c1=0;
+    let s2v=d.reduce((a,v,i)=>a+v*(11-i),0)+c1*2;
+    let c2=(s2v*10)%11; if(c2>=10)c2=0;
+    const w1=(c1+1+Math.floor(Math.random()*8))%10;
+    const w2=(c2+1+Math.floor(Math.random()*8))%10;
+    return `${d[0]}${d[1]}${d[2]}.${d[3]}${d[4]}${d[5]}.${d[6]}${d[7]}${d[8]}-${w1}${w2}`;
+  }
   let s1=d.reduce((a,v,i)=>a+v*(10-i),0);
   let r1=(s1*10)%11; if(r1>=10)r1=0;
   let s2=d.reduce((a,v,i)=>a+v*(11-i),0)+r1*2;
