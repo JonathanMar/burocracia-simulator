@@ -6,7 +6,9 @@ export default defineConfig(async ({ mode }) => {
   
   const plugins = [react()];
   if (standalone) {
-    const { viteSingleFile } = await import("vite-plugin-singlefile");
+    // By using a relative path to node_modules, we completely bypass esbuild's 
+    // package.json exports resolution which fails on Node 20 + Vite 5 in some OSes.
+    const { viteSingleFile } = await import("./node_modules/vite-plugin-singlefile/dist/esm/index.js");
     plugins.push(viteSingleFile({ removeViteModuleLoader: true }));
   }
 
