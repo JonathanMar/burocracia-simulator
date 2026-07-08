@@ -14,11 +14,11 @@ function inlineSingleFile() {
       for (const [key, asset] of Object.entries(bundle)) {
         if (key.endsWith(".css")) {
           const re = new RegExp(`<link[^>]*?href=["'].*?${key}["'][^>]*?>`, "i");
-          html = html.replace(re, `<style>\n${asset.source}\n</style>`);
+          html = html.replace(re, () => `<style>\n${asset.source}\n</style>`);
           delete bundle[key];
         } else if (key.endsWith(".js")) {
           const re = new RegExp(`<script[^>]*?src=["'].*?${key}["'][^>]*?></script>`, "i");
-          html = html.replace(re, `<script type="module">\n${asset.code}\n</script>`);
+          html = html.replace(re, () => `<script type="module">\n${asset.code}\n</script>`);
           delete bundle[key];
         }
       }
