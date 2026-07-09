@@ -20,6 +20,12 @@ Você trabalha na:
 
 # **DIGITALIZAÇÕES INFERNAIS LTDA.**
 
+<p>
+
+  ![Tela inicial](docs/imagens/home.png)
+
+</p>
+
 Sua função é:
 
 - validar documentos;
@@ -29,7 +35,7 @@ Sua função é:
 - salvar tudo na pasta correta;
 - sobreviver até o fim do expediente.
 
-### ⚠️ Mas cuidado com:
+### ⚠️ Mas cuidado com
 
 - CPFs inválidos;
 - nomes divergentes;
@@ -45,6 +51,12 @@ Sua função é:
 
 ## 📋 Sistema de inspeção documental
 
+<p>
+
+  ![Sistema de inspeção](docs/imagens/inspections.png)
+
+</p>
+
 Verifique:
 
 - CPF
@@ -56,6 +68,12 @@ Verifique:
 ---
 
 ## 🖨️ Impressora dinâmica
+
+<p>
+
+  ![Impressora](docs/imagens/printer.png)
+
+</p>
 
 A impressora pode:
 
@@ -77,6 +95,12 @@ Salvar errado custa pontos.
 
 ## ⏱️ Pressão de tempo
 
+<p>
+
+  ![Tempo](docs/imagens/time.png)
+
+</p>
+
 O expediente está acabando.
 
 Cada segundo importa.
@@ -84,6 +108,12 @@ Cada segundo importa.
 ---
 
 ## 📈 Progressão de dificuldade
+
+<p>
+
+  ![Progressão](docs/imagens/progress.png)
+
+</p>
 
 Conforme as fases avançam:
 
@@ -130,7 +160,7 @@ cd burocracia-simulator
 - npm (ou yarn)
 - Git
 
-### Verifique se já possui:
+### Verifique se já possui
 
 ```bash
 node -v
@@ -191,6 +221,12 @@ Ganha pontos.
 ---
 
 ## ❌ Rejeitar documentos inválidos
+
+<p>
+
+  ![Documento rejeitado](docs/imagens/denied.png)
+
+</p>
 
 Ganha pontos.
 
@@ -297,7 +333,8 @@ Os arquivos finais ficarão em:
 dist-standalone/
 ```
 
-Dentro desta pasta, você encontrará um único arquivo **`index.html`**. 
+Dentro desta pasta, você encontrará um único arquivo **`index.html`**.
+
 - Todo o JavaScript, CSS, imagens e sons estão embutidos (inline) dentro deste arquivo.
 - Para jogar, basta dar um **duplo-clique** neste arquivo para abri-lo no seu navegador (Chrome, Edge, etc).
 - **Não precisa de servidor, terminal ou internet!**
